@@ -1,0 +1,111 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>Let's make bar chart with d3</title>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<style>
+.chart rect {
+	fill: steelblue;
+}
+.chart text {
+	fill: white;
+	font: 10px sans-serif;
+	text-anchor: end;
+}
+</style>
+<script>
+var data = [{
+  name: "Locke",
+  value: 4
+}, {
+  name: "Reyes",
+  value: 8
+}, {
+  name: "Ford",
+  value: 15
+}, {
+  name: "Jarrah",
+  value: 16
+}, {
+  name: "Shephard",
+  value: 23
+}, {
+  name: "Kwon",
+  value: 42
+}];
+</script>
+<script>
+function draw(data) { 
+var width = 420,
+  barHeight = 20;
+// x-axis scale
+var x = d3.scale.linear()
+  .range([0, width]);
+// set width of svg element
+var chart = d3.select(".chart")
+  .attr("width", width);
+
+// set the domain of the x scale with a an acessor function to get the attribute value of the javascript object d{name, value} 
+  x.domain([0, d3.max(data, function(d) {
+    return d.value;
+  })]);
+
+  chart.attr("height", barHeight * data.length);
+// bind data
+  var bar = chart.selectAll("g")
+    .data(data)
+    .enter().append("g")
+    .attr("transform", function(d, i) {
+      return "translate(0," + i * barHeight + ")";
+    });
+
+  bar.append("rect")
+    .attr("width", function(d) {
+      return x(d.value);
+    })
+    .attr("height", barHeight - 1);
+
+  bar.append("text")
+    .attr("x", function(d) {
+      return x(d.value) - 3;
+    })
+    .attr("y", barHeight / 2)
+    .attr("dy", ".35em")
+    .text(function(d) {
+      return d.name;
+    });
+	
+	chart.append("line")
+  .attr("x1", x(10))  //<<== change your code here
+  .attr("y1", 0)
+  .attr("x2", x(10))  //<<== and here
+  .attr("y2", chart.attr('height'))
+  .style("stroke-width", 2)
+  .style("stroke", "red")
+  .style("fill", "none");
+
+chart.append("line")
+  .attr("x1", x(25))  //<<== change your code here
+  .attr("y1", 0)
+  .attr("x2", x(25))  //<<== and here
+  .attr("y2", chart.attr('height'))
+  .style("stroke-width", 2)
+  .style("stroke", "red")
+  .style("fill", "none");
+}
+</script>
+</head>
+<body>
+<svg class="chart"></svg>
+<script type="text/javascript">
+function type(d) {
+	d.value = +d.value //coerce to number the value of the tsv file. Otherwise it will have a string type.
+	return d;
+};
+//load data from data.tsv with the type function and call (callback) the function draw
+//to uncomment when this page will be load from a web seerver (e.g. http://localhost/lets_make_a_bar_chart.html)
+d3.tsv("data.tsv", type, draw);
+//draw(data);
+</script>
+</body>
+</html>
